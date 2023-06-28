@@ -9,11 +9,14 @@ class Agent():
         self.possibleActions = random.choices([True, False], k=actions)
         self.actionsBeforeAct = 0
         self.config = dict()
+        self.weight = []
         for i in range(actions):
             self.config[str(i)] = dict()
         for i in range(actions):
             if self.possibleActions[i]:
                 self.generate_action(i)
+        for i in range(actions):
+            self.weight.append(random.uniform(-1, 1))
 
     def get_score(self) -> float:
         return self.fitting
@@ -31,7 +34,7 @@ class Agent():
 
     def swap_weight(self, i, new_weigh):
         self.config[str(i)] = new_weigh
-        
+
     def generate_action(self, i):
         # 0     moving average (cross or trendfolowing)
         # 1     exponential moving average
