@@ -8,6 +8,9 @@ class Agent():
         self.last_action = 0  # only -1 or 1
         self.possibleActions = random.choices([True, False], k=actions)
         self.actionsBeforeAct = 0
+        self.config = dict()
+        for i in range(actions):
+            self.config[str(i)] = dict()
         for i in range(actions):
             if self.possibleActions[i]:
                 self.generate_action(i)
@@ -23,8 +26,14 @@ class Agent():
         # either return -1 sell;0 do nothing;+1 buy
         return 1
 
+    def swap_action(self, i, action):
+        self.config[str(i)] = action
+
+    def swap_weight(self, i, new_weigh):
+        self.config[str(i)] = new_weigh
+        
     def generate_action(self, i):
-        # 0     moving average
+        # 0     moving average (cross or trendfolowing)
         # 1     exponential moving average
         # 2     Volume moving average
         # 3     Average volume line
