@@ -11,7 +11,7 @@ class Agent():
         self.config = dict()
         self.weight = []
         for i in range(actions):
-            self.config[str(i)] = dict()
+            self.config[str(i)] = {"activate":False}
         for i in range(actions):
             if self.possibleActions[i]:
                 self.generate_action(i)
@@ -25,7 +25,7 @@ class Agent():
         self.priceHistory = []
         self.last_action = 0
 
-    def determine_action(self) -> int:
+    def determine_action(self,candle) -> int:
         # either return -1 sell;0 do nothing;+1 buy
         return 1
 
@@ -35,8 +35,13 @@ class Agent():
     def swap_weight(self, i, new_weigh):
         self.config[str(i)] = new_weigh
 
+    def cf_tf_cd(self,i):
+        self.config[str(i)]["candle"] = random.choices(["High", "Low", "Close", "Open"])
+        self.config[str(i)]["timeframe"] = random.choices([1, 5, 10, 30, 60, 120, 240, 480, 1440, 43200, 10080])
+        self.config[str(i)]["activate"] = True
+
     def generate_action(self, i):
-        # 0     moving average (cross or trendfolowing)
+        # 0     moving average ( trendfolowing)
         # 1     exponential moving average
         # 2     Volume moving average
         # 3     Average volume line
@@ -58,5 +63,15 @@ class Agent():
         # 19    Directional Movement Index
         # 20    MTM - Momentum Index
         # 21    Ease of Movement Value
+        self.cf_tf_cd(i)
         if i == 0:
-            pass
+            self.config["0"]["length"] = random.randint(2,500)
+
+        elif i == 1:
+            self.config["1"]["length"] = random.randint(2,500)
+
+
+        elif i == 2:
+            self.config["2"]["length"] = random.randint(2, 500)
+
+        
