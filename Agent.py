@@ -23,17 +23,30 @@ class Agent:
         return self.fitting
 
     def remove_history(self):
-        self.priceHistory = []
+        self.candleHistory = []
         self.last_action = 0
 
     def determine_action(self,candle) -> int:
         self.candleHistory.append(candle)
-        results = []
-        results.append(self.movingaverage())
+        results = [self.movingaverage()]
+        #TODO add the other indicators
 
+        weighted_result = 0
+        for i in range(len(self.possibleActions)):
+            weighted_result += self.weight[i] * results[i]
+        if weighted_result < 0:
+            if self.last_action == -1:
+                return 0
+            self.last_action = -1
+            return -1
+        elif weighted_result > 0:
+            if self.last_action == 1:
+                return 0
+            self.last_action = 1
+            return 1
+        else:
+            return 0
 
-        # either return -1 sell;0 do nothing;+1 buy
-        return 1
 
     def swap_action(self, i, action):
         self.config[str(i)] = action
@@ -133,5 +146,43 @@ class Agent:
             return 4
         elif candleType == "Open":
             return 1
+
+    def formatCandles(candleHistory, candleType, candleTimeframe):
+        candles = []
+        window = []
+
+        for candle in candleHistory:
+            window.append(candle)
+
+            if len(window) == candleTimeframe:
+                if candleType == 1:
+                    candles.append(window[0][1])
+                elif candleType == 2:
+                    candles.append(max(candle[candleType] for candle in window))
+                elif candleType == 3:
+                    candles.append(min(candle[candleType] for candle in window))
+                elif candleType == 4:
+                    candles.append(window[-1][4])
+                else:
+                    candles.append(sum(candleType[candleType]))
+                window.pop(0)
+
+        # Handle the trailing partial candle
+        if len(window) > 0:
+            if candleType == 1:
+                candles.append(window[0][1])
+            elif candleType == 2:
+                candles.append(max(candle[candleType] for candle in window))
+            elif candleType == 3:
+                candles.append(min(candle[candleType] for candle in window))
+            elif candleType == 4:
+                candles.append(window[-1][4])
+            else:
+                candles.append(sum(candleType[candleType]))
+
+
+        return candles
+
+
 
         
