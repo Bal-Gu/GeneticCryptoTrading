@@ -21,7 +21,8 @@ Here we will use a moving average with a length between 2-500 length.
 ## 1     exponential moving average
 Here we will use an exponential moving average with a length between 2-500 length.
 ## 2     Volume moving average
-We will use the similar process on the moving average.
+We will use a difference in volume. A simple idea here is to take the volume of the candel.
+If  it more we give back a `1` if it is less we give back a `-1` 
 Instead of targeting the price we will target the  market volume.
 The weight should ideally filter the and chose the right direction.
 ## 3     Average volume line
