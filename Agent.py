@@ -99,7 +99,7 @@ class Agent:
         # TODO finish the other indicators.
 
     def get_timeframe(self, index):
-        return self.config["index"]["timeframe"]
+        return self.config[index]["timeframe"]
 
     def movingaverage(self):
         if self.actionsBeforeAct("0") < len(self.candleHistory):
