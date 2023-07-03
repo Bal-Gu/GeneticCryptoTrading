@@ -3,17 +3,17 @@ Utilizing the power of genetic algorythm to find the best indicators and their c
 
 # Data
                 
-    # Open time
-    # Open
-    # High
-    # Low
-    # Close
-    # Volume
-    # Close time
-    # Quote asset volume
-    # Number of trades
-    # Taker buy base asset volume
-    # Taker buy quote asset volume
+    1  Open time
+    2  Open
+    3  High
+    4  Low
+    5  Close
+    6  Volume
+    7  Close time
+    8  Quote asset volume
+    9  Number of trades
+    10 Taker buy base asset volume
+    11 Taker buy quote asset volume
 
 # Technical Indicator usage
 ## 0     moving average
