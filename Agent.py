@@ -1,20 +1,21 @@
 import random
 
 
-class Agent():
+class Agent:
     def __init__(self, actions):
         self.fitting = 0
-        self.priceHistory = []
+        self.candleHistory = []
         self.last_action = 0  # only -1 or 1
         self.possibleActions = random.choices([True, False], k=actions)
-        self.actionsBeforeAct = 0
         self.config = dict()
         self.weight = []
+        self.formatedCandles = []
+        self.nextCandleClose = 0
         for i in range(actions):
             self.config[str(i)] = {"activate":False}
         for i in range(actions):
             if self.possibleActions[i]:
-                self.generate_action(i)
+                self.generate_action(i,False)
         for i in range(actions):
             self.weight.append(random.uniform(-1, 1))
 
@@ -26,6 +27,11 @@ class Agent():
         self.last_action = 0
 
     def determine_action(self,candle) -> int:
+        self.candleHistory.append(candle)
+        results = []
+        results.append(self.movingaverage())
+
+
         # either return -1 sell;0 do nothing;+1 buy
         return 1
 
@@ -40,7 +46,7 @@ class Agent():
         self.config[str(i)]["timeframe"] = random.choices([1, 5, 10, 30, 60, 120, 240, 480, 1440, 43200, 10080])
         self.config[str(i)]["activate"] = True
 
-    def generate_action(self, i):
+    def generate_action(self, i,mutate):
         # 0     moving average ( trendfolowing)
         # 1     exponential moving average
         # 2     Volume moving average
@@ -63,15 +69,55 @@ class Agent():
         # 19    Directional Movement Index
         # 20    MTM - Momentum Index
         # 21    Ease of Movement Value
-        self.cf_tf_cd(i)
+        if not mutate:
+            self.cf_tf_cd(i)
+
         if i == 0:
-            self.config["0"]["length"] = random.randint(2,500)
+            amount = random.randint(2,500)
+            self.config["0"]["length"] = amount
+            self.config["0"]["previous"] = 0
 
         elif i == 1:
+            amount = random.randint(2,500)
             self.config["1"]["length"] = random.randint(2,500)
-
+            self.config["0"]["previous"] = 0
 
         elif i == 2:
-            self.config["2"]["length"] = random.randint(2, 500)
+            amount = random.randint(2,500)
+            self.config[str(i)]["candle"] = 5 # volume index location
+            self.config["2"]["previous"] = 0
+        # TODO finish the other indicators.
 
+    def get_timeframe(self, index):
+        return self.config["index"]["timeframe"]
+
+    def movingaverage(self):
+        if self.actionsBeforeAct("0") < len(self.candleHistory):
+            return 0
+        for index in self.config:
+            if not self.config[index]["activate"]:
+                continue
+            # moving average
+            if index == "0":
+                previous_ma = self.config[index]["previous"]
+                if previous_ma == 0:
+                    return 0
+                ma = 0
+                candleType = self.selectCandle(self.config[index]["candle"])
+                candles = self.formatCandles(self.candleHistory, candleType)
+                for value in candles:
+                    ma += value
+                current_ma = ma / len(candles)
+                self.config[index]["previous"] = current_ma
+                if current_ma >= previous_ma:
+                    return 1
+                else:
+                    return -1
+
+    def actionsBeforeAct(self, index):
+        if index == "0" or index == "1":
+            return self.config[index]["length"] * self.config[index]["timeframe"] > len(self.candleHistory)
+        if index == "2" and len(self.candleHistory)
+            return
+        return False
         
