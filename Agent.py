@@ -116,8 +116,22 @@ class Agent:
 
     def actionsBeforeAct(self, index):
         if index == "0" or index == "1":
-            return self.config[index]["length"] * self.config[index]["timeframe"] > len(self.candleHistory)
-        if index == "2" and len(self.candleHistory)
-            return
+            return self.config[index]["length"] * self.config[index]["timeframe"] >= len(self.candleHistory)
+        if index == "2" and len(self.candleHistory) >= 2:
+            return True
         return False
+
+    def selectCandle(self, index):
+        candleType = self.config[index]["candle"]
+        if str(candleType).isdigit():
+            return candleType
+        elif candleType == "High":
+            return 2
+        elif candleType == "Low":
+            return 3
+        elif candleType == "Close":
+            return 4
+        elif candleType == "Open":
+            return 1
+
         
